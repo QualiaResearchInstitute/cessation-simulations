@@ -38,19 +38,15 @@ $$
 
 Where:
 
-- $$ I(d) $$ is the total influence at distance $$ d $$
-- $$ n $$ is the number of coupling levels (4 in this implementation)
-- $$ C_i $$ is the $$ i $$-th coupling strength (controlled by user interface sliders)
-- $$ r_i = D_i \cdot d_{\text{max}} $$, where $$ D_i $$ is the $$ i $$-th characteristic distance
-- $$ w_i = W_i \cdot d_{\text{max}} $$, where $$ W_i $$ is the $$ i $$-th ring width
+- $$ I(d) $$ is the total influence at distance $$ d $$  
+- $$ n $$ is the number of coupling levels (4 in this implementation)  
+- $$ C_i $$ is the $$ i $$-th coupling strength (controlled by user interface sliders)  
+- $$ r_i = D_i \cdot d_{\text{max}} $$, where $$ D_i $$ is the $$ i $$-th characteristic distance  
+- $$ w_i = W_i \cdot d_{\text{max}} $$, where $$ W_i $$ is the $$ i $$-th ring width  
 - $$ R(d, r_i, w_i) $$ is the ring function, defined as:
 
 $$
-R(d, r_i, w_i) = 
-\begin{cases}
-1 & \text{if } |d - r_i| \leq \frac{w_i}{2} \\
-0 & \text{otherwise}
-\end{cases}
+R(d, r, w) = \exp\left[-\frac{(d-r)^2}{2(0.5w)^2}\right] - \exp\left[-\frac{(d-r)^2}{2w^2}\right]
 $$
 
 ### Dimensionality Interaction
