@@ -7,11 +7,6 @@ Welcome to the **Cessation Simulations** repository by the Qualia Research Insti
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Background](#background)
-  - [Symmetry Theory of Valence](#symmetry-theory-of-valence)
-  - [Hyperbolic Geometry of DMT Experiences](#hyperbolic-geometry-of-dmt-experiences)
-  - [Neural Annealing & Healing Trauma](#neural-annealing--healing-trauma)
-  - [Abstraction and Reification in Gestalts](#abstraction-and-reification-in-gestalts)
 - [Simulations](#simulations)
   - [Gestalt Detector: Simplification via Structural Alignment](#gestalt-detector-simplification-via-structural-alignment)
   - [Standing Wave Pattern Across Multiple Fields: Simplification via Standing Wave Patterns](#standing-wave-pattern-across-multiple-fields-simplification-via-standing-wave-patterns)
