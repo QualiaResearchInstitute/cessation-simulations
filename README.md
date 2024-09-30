@@ -1,4 +1,5 @@
-Read the full write
+Read the full QRI write-up: https://qri.org/blog/cessation-simulations
+Read the accompanying draft academic paper: https://philpapers.org/rec/PERCSC
 
 ## Gestalt Detector: Simplification via Structural Alignment
 
