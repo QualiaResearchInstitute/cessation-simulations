@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4D Wave Visualization with Continuous Rotations</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: 'Lato', Arial, sans-serif; 
+            background-color: #0a0a0a;
+            color: #e6e6fa;
+        }
+        canvas { display: block; }
+        #controls, #sidebar {
+            background-color: rgba(10, 10, 10, 0.8);
+            color: #e6e6fa;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(230, 230, 250, 0.3);
+            transition: transform 0.3s ease-in-out;
+        }
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            max-width: 250px;
+        }
+        .matrix {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3px;
+            margin-bottom: 10px;
+        }
+        .matrix input {
+            width: 35px;
+            background-color: rgba(10, 10, 10, 0.6);
+            border: 1px solid #e6e6fa;
+            color: #e6e6fa;
+            padding: 3px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .slider-container label {
+            flex: 1;
+            font-size: 14px;
+        }
+        .slider-container input {
+            flex: 2;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #e6e6fa;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        .slider-container input:hover {
+            opacity: 1;
+        }
+        .slider-container input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #e6e6fa;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .slider-container input::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: #e6e6fa;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        button {
+            margin-right: 8px;
+            margin-bottom: 8px;
+            background-color: #e6e6fa;
+            color: #0a0a0a;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 12px;
+        }
+        button:hover {
+            background-color: #d8d8ff;
+        }
+        #sidebar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+        }
+        #video-container {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        #video-container iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+        #explanation {
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding-right: 10px;
+            font-size: 14px;
+        }
+        #explanation::-webkit-scrollbar {
+            width: 5px;
+        }
+        #explanation::-webkit-scrollbar-track {
+            background: rgba(10, 10, 10, 0.3);
+        }
+        #explanation::-webkit-scrollbar-thumb {
+            background: #e6e6fa;
+            border-radius: 5px;
+        }
+        #explanation::-webkit-scrollbar-thumb:hover {
+            background: #d8d8ff;
+        }
+        #watermark {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            opacity: 0.7;
+            z-index: 1000;
+        }
+        #watermark img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        #watermark span {
+            color: #e6e6fa;
+            font-family: 'Lato', Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        #jsonIO {
+            width: 100%;
+            height: 80px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            background-color: rgba(10, 10, 10, 0.6);
+            border: 1px solid #e6e6fa;
+            color: #e6e6fa;
+            padding: 5px;
+            border-radius: 3px;
+            resize: vertical;
+            font-size: 12px;
+        }
+        .toggle-btn {
+            position: absolute;
+            top: 10px;
+            background-color: #e6e6fa;
+            color: #0a0a0a;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        #toggle-controls {
+            left: 10px;
+        }
+        #toggle-sidebar {
+            right: 10px;
+        }
+        .hidden {
+            transform: translateX(-110%);
+        }
+        #controls.hidden {
+            transform: translateX(-110%);
+        }
+        #sidebar.hidden {
+            transform: translateX(110%);
+        }
+        #seizure-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(10, 10, 10, 0.9);
+            color: #e6e6fa;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(230, 230, 250, 0.3);
+            z-index: 2000;
+            text-align: center;
+        }
+        #seizure-warning button {
+            margin-top: 10px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="seizure-warning">
+        <h2>Seizure Warning</h2>
+        <p>This visualization contains rapidly changing colors and patterns which may trigger seizures in people with photosensitive epilepsy. Viewer discretion is advised.</p>
+        <button onclick="closeSeizureWarning()">I understand, continue</button>
+    </div>
+    <button id="toggle-controls" class="toggle-btn">Toggle Controls</button>
+    <button id="toggle-sidebar" class="toggle-btn">Toggle Sidebar</button>
+    <div id="controls">
+        <h3>Matrix 1</h3>
+        <div id="matrix1" class="matrix"></div>
+        <h3>Matrix 2</h3>
+        <div id="matrix2" class="matrix"></div>
+        <div class="slider-container">
+            <label for="interpolationSlider">Interpolation:</label>
+            <input type="range" id="interpolationSlider" min="0" max="1" step="0.01" value="0.5">
+            <span id="interpolationValue">0.5</span>
+        </div>
+        <h3>4D Rotations</h3>
+        <button id="startXY">Start XY Rotation</button>
+        <button id="stopXY">Stop XY Rotation</button>
+        <button id="startZW">Start ZW Rotation</button>
+        <button id="stopZW">Stop ZW Rotation</button>
+        <div class="slider-container">
+            <label for="xySpeedSlider">XY Speed:</label>
+            <input type="range" id="xySpeedSlider" min="0" max="0.1" step="0.001" value="0.01">
+            <span id="xySpeedValue">0.01</span>
+        </div>
+        <div class="slider-container">
+            <label for="zwSpeedSlider">ZW Speed:</label>
+            <input type="range" id="zwSpeedSlider" min="0" max="0.1" step="0.001" value="0.01">
+            <span id="zwSpeedValue">0.01</span>
+        </div>
+        <textarea id="jsonIO" placeholder="JSON Input/Output"></textarea>
+        <button id="exportButton">Export Parameters</button>
+        <button id="importButton">Import Parameters</button>
+        <button id="resetButton">Reset to Default</button>
+    </div>
+    <div id="sidebar">
+        <div id="video-container">
+            <iframe height="200" src="https://www.youtube.com/embed/BRVH-LMCBkA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div id="explanation">
+            <h3>4D Wave Control Simulation</h3>
+            <p>Welcome to the 4D Wave Control tool, developed by the Qualia Research Institute. This simulation is designed to help you develop an intuition for 4D rotations and matrix transformations, which may be an important stepping stone in exploring higher-dimensional states of consciousness.</p>
+            <p>What you see is a 4D cubic lattice projected into 3D space. Each point in the lattice represents a 4D vector, with its color indicating its position along the fourth dimension.</p>
+            <p>Key features of this tool:</p>
+            <ul>
+                <li>Visualize 4D rotations and matrix transformations</li>
+                <li>Develop intuition for linear algebra concepts like matrix multiplication, projective transformations, and interpolation</li>
+                <li>Explore concepts such as vector spaces, linear combinations, and rank dimensionality</li>
+            </ul>
+            <p>How to use the controls:</p>
+            <ul>
+                <li>Matrix 1 & 2: Adjust these to change the initial and final transformations</li>
+                <li>Interpolation slider: Blend between Matrix 1 and Matrix 2</li>
+                <li>4D Rotations: Start/stop rotations in the XY and ZW planes</li>
+                <li>Speed sliders: Adjust the rotation speeds</li>
+                <li>Export/Import: Save and load your configurations using JSON</li>
+                <li>Reset to Default: Restore all parameters to their default values, including colors</li>
+            </ul>
+            <p>Interacting with the visualization:</p>
+            <ul>
+                <li>Click and drag to rotate the view</li>
+                <li>Scroll to zoom in and out</li>
+                <li>Experiment with different matrix values to see various transformations</li>
+            </ul>
+            <p>Tips for exploration:</p>
+            <ul>
+                <li>Start with small changes to the matrices to understand their effects</li>
+                <li>Try setting both XY and ZW rotation speeds between 0.1 and 0.3 for interesting patterns</li>
+                <li>Play with the interpolation slider to see how one matrix transformation morphs into another</li>
+                <li>Consider putting on some music and spending extended time (15+ minutes) observing the rotations to train your visual intuition</li>
+            </ul>
+            <p>This tool can help you understand various principles in linear algebra, from basic concepts like matrix multiplication to more advanced topics like eigen values and determinants. Enjoy exploring the fascinating world of 4D rotations!</p>
+        </div>
+    </div>
+    <a href="https://qri.org" target="_blank">
+    <div id="watermark" style="font-family:Futura PT Demi, sans-serif;letter-spacing: 3px;">
+        <img src="../images/logo.webp" alt="QRI Logo">
+        <span>QUALIA RESEARCH INSTITUTE</span>
+    </div>
+    </a>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.151.3/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.151.3/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const defaultValues = {
+            matrix1: [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1],
+            matrix2: [0,-1,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,1],
+            interpolation: 0.5,
+            xySpeed: 0.01,
+            zwSpeed: 0.01,
+            xyRotationEnabled: false,
+            zwRotationEnabled: false
+        };
+
+        const createMatrix = (id, initialValues) => {
+            const matrixDiv = document.getElementById(id);
+            const matrix = [];
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.step = '0.1';
+                    input.value = initialValues[i * 4 + j];
+                    matrixDiv.appendChild(input);
+                    matrix.push(input);
+                }
+            }
+            return matrix;
+        };
+
+        const matrix1 = createMatrix('matrix1', defaultValues.matrix1);
+        const matrix2 = createMatrix('matrix2', defaultValues.matrix2);
+
+        const interpolationSlider = document.getElementById('interpolationSlider');
+        const interpolationValue = document.getElementById('interpolationValue');
+        const xySpeedSlider = document.getElementById('xySpeedSlider');
+        const xySpeedValue = document.getElementById('xySpeedValue');
+        const zwSpeedSlider = document.getElementById('zwSpeedSlider');
+        const zwSpeedValue = document.getElementById('zwSpeedValue');
+
+        let xyRotationAngle = 0;
+        let zwRotationAngle = 0;
+        let xyRotationEnabled = defaultValues.xyRotationEnabled;
+        let zwRotationEnabled = defaultValues.zwRotationEnabled;
+
+        document.getElementById('startXY').addEventListener('click', () => { xyRotationEnabled = true; });
+        document.getElementById('stopXY').addEventListener('click', () => { xyRotationEnabled = false; });
+        document.getElementById('startZW').addEventListener('click', () => { zwRotationEnabled = true; });
+        document.getElementById('stopZW').addEventListener('click', () => { zwRotationEnabled = false; });
+
+        const gridSize = 10;
+        const spacing = 0.5;
+        const points = [];
+        for (let w = 0; w < gridSize; w++) {
+            for (let z = 0; z < gridSize; z++) {
+                for (let y = 0; y < gridSize; y++) {
+                    for (let x = 0; x < gridSize; x++) {
+                        const point = new THREE.Vector4(
+                            x * spacing - (gridSize * spacing) / 2,
+                            y * spacing - (gridSize * spacing) / 2,
+                            z * spacing - (gridSize * spacing) / 2,
+                            w * spacing - (gridSize * spacing) / 2
+                        );
+                        points.push(point);
+                    }
+                }
+            }
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(points.length * 3);
+        const colors = new Float32Array(points.length * 3);
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const material = new THREE.PointsMaterial({size: 0.05, vertexColors: true});
+        const particleSystem = new THREE.Points(geometry, material);
+        scene.add(particleSystem);
+
+        camera.position.z = 10;
+        const controls = new OrbitControls(camera, renderer.domElement);
+
+        const getMatrixValues = (matrixInputs) => {
+            return matrixInputs.map(input => parseFloat(input.value));
+        };
+
+        const interpolateMatrices = (m1, m2, t) => {
+            return m1.map((v, i) => v * (1 - t) + m2[i] * t);
+        };
+
+        const applyMatrix = (point, matrix) => {
+            return new THREE.Vector4(
+                point.x * matrix[0] + point.y * matrix[1] + point.z * matrix[2] + point.w * matrix[3],
+                point.x * matrix[4] + point.y * matrix[5] + point.z * matrix[6] + point.w * matrix[7],
+                point.x * matrix[8] + point.y * matrix[9] + point.z * matrix[10] + point.w * matrix[11],
+                point.x * matrix[12] + point.y * matrix[13] + point.z * matrix[14] + point.w * matrix[15]
+            );
+        };
+
+        const rotateXY = (point, angle) => {
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            return new THREE.Vector4(
+                point.x * cos - point.y * sin,
+                point.x * sin + point.y * cos,
+                point.z,
+                point.w
+            );
+        };
+
+        const rotateZW = (point, angle) => {
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            return new THREE.Vector4(
+                point.x,
+                point.y,
+                point.z * cos - point.w * sin,
+                point.z * sin + point.w * cos
+            );
+        };
+
+        const exportParameters = () => {
+            const parameters = {
+                matrix1: getMatrixValues(matrix1),
+                matrix2: getMatrixValues(matrix2),
+                interpolation: parseFloat(interpolationSlider.value),
+                xySpeed: parseFloat(xySpeedSlider.value),
+                zwSpeed: parseFloat(zwSpeedSlider.value),
+                xyRotationEnabled,
+                zwRotationEnabled
+            };
+            document.getElementById('jsonIO').value = JSON.stringify(parameters, null, 2);
+        };
+
+        const importParameters = () => {
+            try {
+                const parameters = JSON.parse(document.getElementById('jsonIO').value);
+                updateParameters(parameters);
+            } catch (error) {
+                console.error('Error importing parameters:', error);
+                alert('Invalid JSON format. Please check your input.');
+            }
+        };
+
+        const resetParameters = () => {
+            updateParameters(defaultValues);
+            xyRotationAngle = 0;
+            zwRotationAngle = 0;
+            resetColors();
+        };
+
+        const resetColors = () => {
+            const colors = geometry.attributes.color.array;
+            const defaultColor = new THREE.Color(0xffffff);
+            for (let i = 0; i < colors.length; i += 3) {
+                colors[i] = defaultColor.r;
+                colors[i + 1] = defaultColor.g;
+                colors[i + 2] = defaultColor.b;
+            }
+            geometry.attributes.color.needsUpdate = true;
+        };
+
+        const updateParameters = (parameters) => {
+            matrix1.forEach((input, i) => input.value = parameters.matrix1[i]);
+            matrix2.forEach((input, i) => input.value = parameters.matrix2[i]);
+            interpolationSlider.value = parameters.interpolation;
+            xySpeedSlider.value = parameters.xySpeed;
+            zwSpeedSlider.value = parameters.zwSpeed;
+            xyRotationEnabled = parameters.xyRotationEnabled;
+            zwRotationEnabled = parameters.zwRotationEnabled;
+            
+            interpolationValue.textContent = parameters.interpolation.toFixed(2);
+            xySpeedValue.textContent = parameters.xySpeed.toFixed(3);
+            zwSpeedValue.textContent = parameters.zwSpeed.toFixed(3);
+        };
+
+        document.getElementById('exportButton').addEventListener('click', exportParameters);
+        document.getElementById('importButton').addEventListener('click', importParameters);
+        document.getElementById('resetButton').addEventListener('click', resetParameters);
+
+        const toggleControls = document.getElementById('toggle-controls');
+        const toggleSidebar = document.getElementById('toggle-sidebar');
+        const controlsPanel = document.getElementById('controls');
+        const sidebarPanel = document.getElementById('sidebar');
+
+        toggleControls.addEventListener('click', () => {
+            controlsPanel.classList.toggle('hidden');
+        });
+
+        toggleSidebar.addEventListener('click', () => {
+            sidebarPanel.classList.toggle('hidden');
+        });
+
+        let isReset = true;
+
+        const animate = () => {
+            requestAnimationFrame(animate);
+            
+            const m1 = getMatrixValues(matrix1);
+            const m2 = getMatrixValues(matrix2);
+            const t = parseFloat(interpolationSlider.value);
+            interpolationValue.textContent = t.toFixed(2);
+            const interpolatedMatrix = interpolateMatrices(m1, m2, t);
+
+            const xySpeed = parseFloat(xySpeedSlider.value);
+            const zwSpeed = parseFloat(zwSpeedSlider.value);
+            xySpeedValue.textContent = xySpeed.toFixed(3);
+            zwSpeedValue.textContent = zwSpeed.toFixed(3);
+
+            if (xyRotationEnabled) {
+                xyRotationAngle += xySpeed;
+            }
+            if (zwRotationEnabled) {
+                zwRotationAngle += zwSpeed;
+            }
+
+            const positions = geometry.attributes.position.array;
+            const colors = geometry.attributes.color.array;
+            points.forEach((point, i) => {
+                let transformedPoint = applyMatrix(point, interpolatedMatrix);
+                
+                transformedPoint = rotateXY(transformedPoint, xyRotationAngle);
+                transformedPoint = rotateZW(transformedPoint, zwRotationAngle);
+                
+                positions[i * 3] = transformedPoint.x;
+                positions[i * 3 + 1] = transformedPoint.y;
+                positions[i * 3 + 2] = transformedPoint.z;
+                
+                if (!isReset) {
+                    const hue = (transformedPoint.w + gridSize * spacing / 2) / (gridSize * spacing);
+                    const color = new THREE.Color().setHSL(hue, 1, 0.5);
+                    colors[i * 3] = color.r;
+                    colors[i * 3 + 1] = color.g;
+                    colors[i * 3 + 2] = color.b;
+                }
+            });
+            
+            geometry.attributes.position.needsUpdate = true;
+            geometry.attributes.color.needsUpdate = true;
+
+            controls.update();
+            renderer.render(scene, camera);
+
+            isReset = false;
+        };
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        window.closeSeizureWarning = function() {
+            document.getElementById('seizure-warning').style.display = 'none';
+        };
+    </script>
+</body>
+</html>

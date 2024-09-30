@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractal Recursive Coherence Demo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        body { margin: 0; display: flex; font-family: Arial, sans-serif; }
+        #canvas-container { flex: 1; }
+        #controls { width: 300px; padding: 20px; background-color: #f0f0f0; overflow-y: auto; height: 100vh; }
+        .control-group { margin-bottom: 20px; }
+        .projection-controls { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        button, select { margin-top: 10px; }
+        #seizure-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            text-align: center;
+        }
+        #seizure-warning button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="seizure-warning">
+        <h2>Seizure Warning</h2>
+        <p>This visualization contains rapidly changing patterns and colors which may trigger seizures in people with photosensitive epilepsy. Viewer discretion is advised.</p>
+        <button onclick="closeSeizureWarning()">I understand, continue</button>
+    </div>
+    <div id="canvas-container"></div>
+    <div id="controls">
+        <div class="control-group">
+            <h3>Global Controls</h3>
+            <label for="dimensionSlider">Lift Dimension: </label>
+            <input type="range" id="dimensionSlider" min="0" max="100" value="5" step="0.1">
+            <br>
+            <label for="rotationSlider">Global Rotation: </label>
+            <input type="range" id="rotationSlider" min="0" max="360" value="0" step="1">
+            <br>
+            <label for="spatialFrequencyXSlider">Spatial Frequency X: </label>
+            <input type="range" id="spatialFrequencyXSlider" min="1" max="50" value="20" step="1">
+            <br>
+            <label for="spatialFrequencyYSlider">Spatial Frequency Y: </label>
+            <input type="range" id="spatialFrequencyYSlider" min="1" max="50" value="20" step="1">
+            <br>
+            <label for="temporalFrequencySlider">Temporal Frequency: </label>
+            <input type="range" id="temporalFrequencySlider" min="0" max="0.1" value="0.01" step="0.001">
+            <br>
+            <label for="transparencySlider">Grating Transparency: </label>
+            <input type="range" id="transparencySlider" min="0" max="255" value="255" step="1">
+            <br>
+            <button id="toggleCycleBtn">Toggle Cycle Mode</button>
+            <p id="cycleStatus">Cycle Mode: Off</p>
+        </div>
+        <div class="control-group">
+            <h3>Projections</h3>
+            <select id="projectionType">
+                <option value="rotation">Rotation</option>
+                <option value="scale">Scale</option>
+                <option value="shear">Shear</option>
+                <option value="translation">Translation</option>
+            </select>
+            <button id="addProjectionBtn">Add Projection</button>
+            <div id="projectionsList"></div>
+        </div>
+        <div class="control-group">
+            <h3>Recursion</h3>
+            <button id="addRecursionBtn">Add Recursion Level</button>
+            <button id="removeRecursionBtn">Remove Recursion Level</button>
+            <p id="recursionLevel">Recursion Level: 0</p>
+        </div>
+    </div>
+    <script>
+        let img, cyclicBuffer;
+        let dimensionSlider, rotationSlider, spatialFrequencyXSlider, spatialFrequencyYSlider, temporalFrequencySlider, transparencySlider;
+        let addProjectionBtn, addRecursionBtn, removeRecursionBtn, recursionLevelP, toggleCycleBtn, cycleStatusP;
+        let projectionType;
+        let recursionLevel = 0;
+        let projections = [];
+        let cycleMode = false;
+        let time = 0;
+
+        function setup() {
+            let canvas = createCanvas(800, 800);
+            canvas.parent('canvas-container');
+            
+            img = createGraphics(200, 200);
+            cyclicBuffer = createGraphics(200, 200);
+            
+            setupControls();
+        }
+
+        function setupControls() {
+            dimensionSlider = select('#dimensionSlider');
+            rotationSlider = select('#rotationSlider');
+            spatialFrequencyXSlider = select('#spatialFrequencyXSlider');
+            spatialFrequencyYSlider = select('#spatialFrequencyYSlider');
+            temporalFrequencySlider = select('#temporalFrequencySlider');
+            transparencySlider = select('#transparencySlider');
+            projectionType = select('#projectionType');
+            addProjectionBtn = select('#addProjectionBtn');
+            addRecursionBtn = select('#addRecursionBtn');
+            removeRecursionBtn = select('#removeRecursionBtn');
+            recursionLevelP = select('#recursionLevel');
+            toggleCycleBtn = select('#toggleCycleBtn');
+            cycleStatusP = select('#cycleStatus');
+
+            addProjectionBtn.mousePressed(addProjection);
+            addRecursionBtn.mousePressed(addRecursionLevel);
+            removeRecursionBtn.mousePressed(removeRecursionLevel);
+            toggleCycleBtn.mousePressed(toggleCycleMode);
+        }
+
+        function updateDiffractionGrating() {
+            let frequencyX = spatialFrequencyXSlider.value() * 0.1;
+            let frequencyY = spatialFrequencyYSlider.value() * 0.1;
+            let temporalFrequency = temporalFrequencySlider.value();
+            let transparency = transparencySlider.value();
+
+            img.background(255, 0);  // Transparent background
+            img.noStroke();
+            for (let x = 0; x < 200; x++) {
+                for (let y = 0; y < 200; y++) {
+                    let value = sin(x * frequencyX + time * temporalFrequency) * 
+                                sin(y * frequencyY + time * temporalFrequency) * 127 + 128;
+                    img.fill(value, transparency);
+                    img.rect(x, y, 1, 1);
+                }
+            }
+        }
+
+        function addProjection() {
+            let type = projectionType.value();
+            let projection = new Projection(type, projections.length);
+            projections.push(projection);
+            updateProjectionsList();
+        }
+
+        function updateProjectionsList() {
+            let list = select('#projectionsList');
+            list.html('');
+            for (let i = 0; i < projections.length; i++) {
+                let div = createDiv('').class('projection-controls');
+                div.child(createSpan(`${projections[i].type} Projection ${i + 1}`));
+                let removeBtn = createButton('Remove');
+                removeBtn.mousePressed(() => removeProjection(i));
+                div.child(removeBtn);
+                div.child(createSlider(0, 1, 0.5, 0.01).input((event) => projections[i].setStrength(event.target.value)));
+                list.child(div);
+            }
+        }
+
+        function removeProjection(index) {
+            projections.splice(index, 1);
+            updateProjectionsList();
+        }
+
+        function toggleCycleMode() {
+            cycleMode = !cycleMode;
+            cycleStatusP.html(`Cycle Mode: ${cycleMode ? 'On' : 'Off'}`);
+        }
+
+        class Projection {
+            constructor(type, index) {
+                this.type = type;
+                this.index = index;
+                this.strength = 0.5;
+            }
+
+            setStrength(value) {
+                this.strength = value;
+            }
+
+            apply(p, x, y, size) {
+                p.push();
+                p.translate(x, y);
+
+                switch (this.type) {
+                    case 'rotation':
+                        p.rotate(this.strength * TWO_PI);
+                        break;
+                    case 'scale':
+                        let s = map(this.strength, 0, 1, 0.5, 2);
+                        p.scale(s);
+                        break;
+                    case 'shear':
+                        let shx = map(this.strength, 0, 1, -0.5, 0.5);
+                        let shy = map(this.strength, 0, 1, -0.5, 0.5);
+                        p.shearX(shx);
+                        p.shearY(shy);
+                        break;
+                    case 'translation':
+                        let tx = map(this.strength, 0, 1, -50, 50);
+                        let ty = map(this.strength, 0, 1, -50, 50);
+                        p.translate(tx, ty);
+                        break;
+                }
+
+                p.image(img, -size/2, -size/2, size, size);
+                p.pop();
+            }
+        }
+
+        function draw() {
+            updateDiffractionGrating();
+            background(240);
+            
+            // Original image
+            image(img, 0, 0, 400, 400);
+            
+            // Hyperdimensional projection
+            let liftDimension = dimensionSlider.value();
+            let rotation = radians(rotationSlider.value());
+            
+            push();
+            translate(600, 400);
+            rotate(rotation);
+            
+            if (cycleMode) {
+                drawCyclicProjections(0, 0, 200, liftDimension, recursionLevel);
+            } else {
+                drawProjections(0, 0, 200, liftDimension, recursionLevel);
+            }
+            
+            pop();
+
+            time += 1;
+        }
+
+        function drawProjections(x, y, size, liftDimension, level) {
+            if (level < 0) return;
+            
+            let count = projections.length;
+            for (let i = 0; i < count; i++) {
+                let angle = TWO_PI * i / count;
+                let px = x + cos(angle) * liftDimension;
+                let py = y + sin(angle) * liftDimension;
+                
+                projections[i].apply(window, px, py, size);
+                
+                if (level > 0) {
+                    drawProjections(px, py, size * 0.5, liftDimension * 0.5, level - 1);
+                }
+            }
+        }
+
+        function drawCyclicProjections(x, y, size, liftDimension, level) {
+            if (level < 0 || projections.length === 0) return;
+            
+            cyclicBuffer.clear();
+            cyclicBuffer.image(img, 0, 0, 200, 200);
+            
+            for (let i = 0; i < projections.length; i++) {
+                let tempBuffer = createGraphics(200, 200);
+                tempBuffer.clear();
+                projections[i].apply(tempBuffer, 100, 100, 200);
+                cyclicBuffer.image(tempBuffer, 0, 0);
+                tempBuffer.remove();
+            }
+            
+            let count = projections.length;
+            for (let i = 0; i < count; i++) {
+                let angle = TWO_PI * i / count;
+                let px = x + cos(angle) * liftDimension;
+                let py = y + sin(angle) * liftDimension;
+                
+                image(cyclicBuffer, px - size/2, py - size/2, size, size);
+                
+                if (level > 0) {
+                    drawCyclicProjections(px, py, size * 0.5, liftDimension * 0.5, level - 1);
+                }
+            }
+        }
+
+        function addRecursionLevel() {
+            recursionLevel++;
+            updateRecursionLevelDisplay();
+        }
+
+        function removeRecursionLevel() {
+            if (recursionLevel > 0) {
+                recursionLevel--;
+                updateRecursionLevelDisplay();
+            }
+        }
+
+        function updateRecursionLevelDisplay() {
+            recursionLevelP.html(`Recursion Level: ${recursionLevel}`);
+        }
+
+        function closeSeizureWarning() {
+            document.getElementById('seizure-warning').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
