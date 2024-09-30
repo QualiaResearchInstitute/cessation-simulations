@@ -64,7 +64,7 @@ This simulation utilizes parameters related to **Coupled Kernels**, which influe
 <div class="row mb-4">
   <div class="col-md-6 mb-3">
     <div class="video-container">
-      <video src="/images/cessation-simulations/image12.webm" autoplay loop controls muted class="img-fluid">
+      <video src="images/image12.webm" autoplay loop controls muted class="img-fluid">
         Your browser does not support the video tag.
       </video>
     </div>
@@ -72,7 +72,7 @@ This simulation utilizes parameters related to **Coupled Kernels**, which influe
   </div>
   <div class="col-md-6 mb-3">
     <div class="video-container">
-      <video src="/images/cessation-simulations/image10.webm" autoplay loop controls muted class="img-fluid">
+      <video src="images/image10.webm" autoplay loop controls muted class="img-fluid">
         Your browser does not support the video tag.
       </video>
     </div>
@@ -139,7 +139,7 @@ Each oscillator's phase \( \theta_i \) is mapped to a color using the CIELAB col
 <div class="row mb-4">
   <div class="col-md-6 mb-3">
     <div class="img-container" style="height: 300px; display: flex; align-items: center; justify-content: center;">
-      <img src="/images/cessation-simulations/image5.png" alt="Simplest Configuration - 2D standing wave pattern" class="img-fluid" style="max-height: 100%;">
+      <img src="images/image5.png" alt="Simplest Configuration - 2D standing wave pattern" class="img-fluid" style="max-height: 100%;">
     </div>
     <p class="mt-2">This configuration demonstrates a 2D standing wave pattern. The projection is set exactly from the corner to produce a hexagonal appearance.</p>
   </div>
@@ -147,7 +147,7 @@ Each oscillator's phase \( \theta_i \) is mapped to a color using the CIELAB col
   <div class="col-md-6 mb-3">
     <div class="video-container" style="height: 300px; display: flex; align-items: center; justify-content: center;">
       <video class="img-fluid" style="max-height: 100%;" controls autoplay loop muted playsinline>
-        <source src="/images/cessation-simulations/image9.webm" type="video/webm">
+        <source src="images/image9.webm" type="video/webm">
         Your browser does not support the video tag.
       </video>
     </div>
@@ -211,7 +211,7 @@ Each oscillator's phase \( \theta_i \) is mapped to a color using the CIELAB col
   <div class="col-md-12 mb-3">
     <div class="video-container">
       <video class="img-fluid" controls autoplay loop muted playsinline>
-        <source src="/images/cessation-simulations/image3.webm" type="video/webm">
+        <source src="images/image3.webm" type="video/webm">
         Your browser does not support the video tag.
       </video>
     </div>
@@ -223,7 +223,7 @@ Each oscillator's phase \( \theta_i \) is mapped to a color using the CIELAB col
   <div class="col-md-12 mb-3">
     <div class="video-container">
       <video class="img-fluid" controls autoplay loop muted playsinline>
-        <source src="/images/cessation-simulations/image6.webm" type="video/webm">
+        <source src="images/image6.webm" type="video/webm">
         Your browser does not support the video tag.
       </video>
     </div>
