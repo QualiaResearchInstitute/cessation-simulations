@@ -11,7 +11,6 @@ Welcome to the **Cessation Simulations** repository by the Qualia Research Insti
   - [Gestalt Detector: Simplification via Structural Alignment](#gestalt-detector-simplification-via-structural-alignment)
   - [Standing Wave Pattern Across Multiple Fields: Simplification via Standing Wave Patterns](#standing-wave-pattern-across-multiple-fields-simplification-via-standing-wave-patterns)
   - [Fractal Recursive Coherence: Simplification via Recursion Collapse](#fractal-recursive-coherence-simplification-via-recursion-collapse)
-- [Coupling Kernels](#coupling-kernels)
 - [Dimensionality Interactions: Metric Sharing](#dimensionality-interactions-metric-sharing)
 - [Interacting Nested Dimensional Reduction-Amplification Spaces (INDRAS)](#interacting-nested-dimensional-reduction-amplification-spaces-indras)
 - [Acknowledgements](#acknowledgements)
@@ -311,51 +310,6 @@ Your browser does not support the video tag.
 <p class="text-center">Exploring the Lift Dimension Parameter</p>
 
 **Try it yourself:** [Fractal Recursive Coherence Simulation](https://qri.org/demo/fractal_recursive_coherence.html)
-
----
-
-## Coupling Kernels
-
-During 5-MeO-DMT experiences, a unique synchronization phenomenon was observed, differing from other psychedelics like mushrooms. To model this, we developed coupled oscillators with modulated coupling constants based on distance, enabling the visualization of DMT and 5-MeO-DMT effects.
-
-**Simulation Overview:**
-
-- **Model:** Grid of Kuramoto oscillators with specific natural frequencies and phases.
-- **Connectivity:** Neighbors up to a Manhattan distance of 4 and two randomly chosen small-world connections, introducing a "small-world" aspect to the network.
-- **User Interface:** Five interactive sliders:
-  - Four sliders modulate local coupling constants at different Manhattan distances (1 to 4).
-  - One "Small World" slider modulates the coupling constant for the random long-range connections.
-- **Mathematical Model:**
-
-  **Phase Update Equation**
-
-  For each oscillator \( i \), the phase \( \theta_i \) is updated at each time step \( \Delta t \) according to:
-
-  \[
-  \theta_i(t + \Delta t) = \theta_i(t) + [\omega_i + C_i] \Delta t
-  \]
-
-  **Coupling Term**
-
-  The cumulative influence on oscillator \( i \) from all its neighbors is given by:
-
-  \[
-  C_i = \frac{1}{N_i} \left( \sum_{s=1}^{4} \sum_{j \in D_s} K_s \sin(\theta_j - \theta_i) + \sum_{k \in \text{SW}_i} K_{\text{SW}} \sin(\theta_k - \theta_i) \right)
-  \]
-
-  Where:
-
-  - \( D_s \): Set of neighbors at distance \( s \).
-  - \( K_s \): Coupling constant for neighbors at distance \( s \).
-  - \( \text{SW}_i \): Set of small-world neighbors for oscillator \( i \).
-  - \( N_i \): Total number of neighbors (including small-world connections).
-
-**Visualization:**
-Each oscillator's phase \( \theta_i \) is mapped to a color using the CIELAB color space, providing a visual representation of phase patterns across the grid.
-
-**Visuals:**
-
-![Coupling Kernels Pattern](images/coupling_kernels_pattern.png)
 
 ---
 
