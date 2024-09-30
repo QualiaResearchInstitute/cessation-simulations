@@ -1,6 +1,6 @@
 # Cessation Simulations Readme
 
-Welcome to the **Cessation Simulations** repository by the Qualia Research Institute. This README provides detailed information about our simulations, their parameters, and the underlying concepts. For visual aids, please refer to the images located in the `images/cessation-simulations/` directory.
+Welcome to the **Cessation Simulations** repository by the Qualia Research Institute. This README provides detailed information about our simulations, their parameters, and the underlying concepts. For visual aids, please refer to the images located in the `images/` directory.
 
 ---
 
@@ -40,9 +40,9 @@ The Gestalt Detector simulation explores how structural alignment can simplify c
 
 **Visuals:**
 
-![Perfect alignment of projection; imperfect angles](images/cessation-simulations/image14.png)
+![Perfect alignment of projection; imperfect angles](images/image14.png)
 
-<video src="images/cessation-simulations/image13.webm" autoplay loop controls muted class="img-fluid">
+<video src="images/image13.webm" autoplay loop controls muted class="img-fluid">
 Your browser does not support the video tag.
 </video>
 <p class="text-center">Changing symmetry/structure as angles/near miss parameters shift</p>
@@ -300,12 +300,12 @@ Building on the concept of the world-sheet, the Fractal Recursive Coherence simu
 
 **Visuals:**
 
-<video src="images/cessation-simulations/image7.webm" autoplay loop controls muted class="img-fluid">
+<video src="images/image7.webm" autoplay loop controls muted class="img-fluid">
 Your browser does not support the video tag.
 </video>
 <p class="text-center">Fractal Recursive Coherence Simulation</p>
 
-<video src="images/cessation-simulations/image11.webm" autoplay loop controls muted class="img-fluid">
+<video src="images/image11.webm" autoplay loop controls muted class="img-fluid">
 Your browser does not support the video tag.
 </video>
 <p class="text-center">Exploring the Lift Dimension Parameter</p>
@@ -355,7 +355,7 @@ Each oscillator's phase \( \theta_i \) is mapped to a color using the CIELAB col
 
 **Visuals:**
 
-![Coupling Kernels Pattern](images/cessation-simulations/coupling_kernels_pattern.png)
+![Coupling Kernels Pattern](images/coupling_kernels_pattern.png)
 
 ---
 
@@ -383,7 +383,7 @@ INDRAS models Indra’s Net experiences by recursively mapping spaces of differe
 
 **Visuals:**
 
-![Indra's Net](images/cessation-simulations/indras.jpg)
+![Indra's Net](images/indras.jpg)
 <p class="text-center">Indra's Net metaphor depicting interconnectedness.</p>
 
 ---
