@@ -1,9 +1,11 @@
 Read the full QRI write-up: https://qri.org/blog/cessation-simulations
+
 Read the accompanying draft academic paper: https://philpapers.org/rec/PERCSC
 
 ## Gestalt Detector: Simplification via Structural Alignment
 
 Try it yourself: [Gestalt Detector: Simplification via Structural Alignment](https://qri.org/demo/gestalt_detector.html)
+
 (url to be live soon; in the meantime, gestalt_detector.html can be downloaded directly from GitHub and run)
 
 The study of symmetries in 2D projections of 3D lattices provides insight into how transformations can simplify complex informational structures. By applying various projection angles to a 3D lattice of points onto a 2D plane, we observe the emergence of simpler, more symmetrical patterns. As the projection angles align with the lattice structure, intricate patterns simplify, with points overlapping and forming unified gestalts. This simplification process mirrors potential mechanisms of pattern recognition in perceptual systems, where complex inputs are reduced to more manageable, symmetrical forms.
@@ -23,6 +25,7 @@ To account for the flexibility of pattern recognition systems and probe the ways
 ## Standing Wave Pattern Across Multiple Fields: Simplification via standing wave patterns 
 
 Try it yourself: [Standing Wave Pattern Across Multiple Fields: Simplification via standing wave patterns](https://qri.org/demo/standing_waves.html)
+
 (url to be live soon; in the meantime, standing_waves.html can be downloaded directly from GitHub and run)
 
 This simulation was designed to showcase scenarios where wave patterns across different systems of coupled oscillators in different geometric spaces can behave in the same way.
@@ -257,6 +260,7 @@ Each projection can be individually parameterized, creating a complex composite 
 The simulation implements recursion on these projections, with the ability to add or remove recursion levels. Each level applies the set of defined projections to the output of the previous level, creating a number of layers or levels with cross-frequency correlations. It generates the sense of a "collapse" of many points of view into just one. We thought that it captured enough features of Indra's Net and of a fractal simplification process potentially reminiscent of cessations that it was worth including in the study.
 
 Try it yourself: [Fractal Recursive Coherence: Simplification via Recursion Collapse](https://qri.org/demo/fractal_recursive_coherence.html)
+
 (url to be live soon; in the meantime, fractal_recursive_coherence.html can be downloaded directly from GitHub and run)
 
 <div class="video-container">
