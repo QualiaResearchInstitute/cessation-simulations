@@ -1,3 +1,5 @@
+Read the full write
+
 ## Gestalt Detector: Simplification via Structural Alignment
 
 Try it yourself: [Gestalt Detector: Simplification via Structural Alignment](https://qri.org/demo/gestalt_detector.html)
@@ -38,12 +40,12 @@ $$
 
 Where:
 
-- $$ I(d) $$ is the total influence at distance $$ d $$  
-- $$ n $$ is the number of coupling levels (4 in this implementation)  
-- $$ C_i $$ is the $$ i $$-th coupling strength (controlled by user interface sliders)  
-- $$ r_i = D_i \cdot d_{\text{max}} $$, where $$ D_i $$ is the $$ i $$-th characteristic distance  
-- $$ w_i = W_i \cdot d_{\text{max}} $$, where $$ W_i $$ is the $$ i $$-th ring width  
-- $$ R(d, r_i, w_i) $$ is the ring function, defined as:
+- $I(d)$ is the total influence at distance $d$
+- $n$ is the number of coupling levels (4 in this implementation)
+- $C_i$ is the $i$-th coupling strength (controlled by user interface sliders)
+- $r_i = D_i \cdot d_{\text{max}}$, where $D_i$ is the $i$-th characteristic distance
+- $w_i = W_i \cdot d_{\text{max}}$, where $W_i$ is the $i$-th ring width
+- $R(d, r_i, w_i)$ is the ring function, defined as:
 
 $$
 R(d, r, w) = \exp\left[-\frac{(d-r)^2}{2(0.5w)^2}\right] - \exp\left[-\frac{(d-r)^2}{2w^2}\right]
